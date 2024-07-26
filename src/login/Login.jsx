@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import "./login.css";
 import { toast } from 'react-toastify';
 import { auth, db } from "../lib/firebase.js";
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import upload from '../lib/upload.js';
 
@@ -21,9 +21,26 @@ const Login = () => {
             })
         }
     }
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        // toast.warn("Hello");
+        setLoading(true);
+
+        const formData = new FormData(e.target);
+
+        const { email, password } = Object.fromEntries(formData);
+
+        try {
+            const user = await signInWithEmailAndPassword(auth, email, password);
+
+            // console.log("User==>", user.user.displayName);
+            toast.success("Login successfully!");
+        } catch (error) {
+            console.log(error);
+            toast.error(error.message);
+        }finally{
+            setLoading(false);
+        }
+
     }
     const handleSignUp = async (e) => {
         e.preventDefault();
