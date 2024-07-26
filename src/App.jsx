@@ -2,6 +2,7 @@ import Chat from "./chat/Chat"
 import Detail from "./detail/Detail"
 import List from "./list/List"
 import Login from "./login/Login";
+import Notification from "./notification/Notification";
 
 const App = () => {
   const user = false;
@@ -16,6 +17,7 @@ const App = () => {
         </> :
         <Login />
       }
+      <Notification />
     </div>
   )
 }
