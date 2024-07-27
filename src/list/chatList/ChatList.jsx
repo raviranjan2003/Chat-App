@@ -14,27 +14,35 @@ const ChatList = () => {
   useEffect(()=>{
     const unSub = onSnapshot(doc(db, "userchats", currentUser.id), async (res) => {
       // setChats(doc.data());
-      const items = res.data().chats;
-
-      const promises = items.map( async(item) => {
-        const userDocRef = doc(db, "users", item.recieverId);
-        const userDocSnap = await getDoc(userDocRef);
-
-        const user = userDocSnap.data();
-
-        return [...item, user];
-      })
-
-      const chatData = await Promise.all(promises);
-
-      setChats(chatData.sort((a,b) => b.updatedAt - a.updatedAt));
+      try {
+        const items = res.data().chats;
+        const promises = items.map(async (item) => {
+          const userDocRef = doc(db, "users", item.receiverId); // Fixed typo
+          const userDocSnap = await getDoc(userDocRef);
+          
+          if (!userDocSnap.exists()) {
+            console.error(`User document for ${item.receiverId} does not exist`);
+            return { ...item, user: null };
+          }
+          
+          const user = userDocSnap.data();
+          return { ...item, user }; 
+        });
+    
+        const chatData = await Promise.all(promises);
+    
+        setChats(chatData.sort((a,b) => b.updatedAt - a.updatedAt));
+        setAddMode(false);
+    
+      } catch (error) {
+        console.error("Error fetching chat data: ", error);
+      }
     });
     
     return () => {
       unSub();
     }
   },[currentUser.id]);
-  // console.log(chats);
   return (
     <div className='chatList'>
       <div className='search'>
@@ -50,15 +58,15 @@ const ChatList = () => {
         />
       </div>
       {
-        chats.map(chat => {
-      <div className='item'>
-        <img src="./avatar.png" alt="" />
+        chats.map(chat => (
+      <div className='item' key={chat.chatId}>
+        <img src={chat.user.avatar || "./avatar.png"} alt="" />
         <div className='texts'>
-          <span> Ravi Ranjan</span>
+          <span>{chat.user.username}</span>
           <p>{chat.lastMessage}</p>
         </div>
       </div>
-        })
+        ))
       }
       {addMode && <Adduser/>}
     </div>
