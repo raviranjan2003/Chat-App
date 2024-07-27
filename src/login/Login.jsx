@@ -33,7 +33,7 @@ const Login = () => {
             const user = await signInWithEmailAndPassword(auth, email, password);
 
             // console.log("User==>", user.user.displayName);
-            toast.success("Login successfully!");
+            toast.success("Logged In!");
         } catch (error) {
             console.log(error);
             toast.error(error.message);

@@ -1,7 +1,19 @@
 import React from 'react'
 import "./detail.css";
+import { signOut } from 'firebase/auth';
+import { auth } from '../lib/firebase';
+import { toast } from 'react-toastify';
 
 const Detail = () => {
+  const handleLogOut = () => {
+    signOut(auth)
+    .then(()=>{
+      toast.success("Logged Out !");
+    })
+    .catch(err => {
+      toast.error("Something Went Wrong!");
+    })
+  }
   return (
     <div className="detail">
       <div className="user">
@@ -73,7 +85,7 @@ const Detail = () => {
         </div>
         <div className='btn-container'>
           <button>Block</button>
-          <button className='logout'>Log Out</button>
+          <button className='logout' onClick={handleLogOut}>Log Out</button>
         </div>
       </div>
     </div>
