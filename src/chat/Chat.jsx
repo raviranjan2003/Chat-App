@@ -1,16 +1,33 @@
 import React, { useEffect, useRef, useState } from 'react'
 import "./chat.css";
 import EmojiPicker from 'emoji-picker-react';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../lib/firebase';
+import useChatStore from '../lib/chatStore';
 
 const Chat = () => {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
+  const [chat, setChat] = useState();
+
+  const { chatId } = useChatStore();
 
   const endRef = useRef(null);
 
   useEffect(()=>{
     endRef.current?.scrollIntoView({ behavior : "smooth" });
   },[])
+
+  useEffect(()=>{
+    const unSub = onSnapshot(doc(db, "chats", chatId),(res) => {
+      setChat(res.data());
+    })
+
+    return () =>{
+      unSub();
+    }
+  }, [chatId]);
+
   const handleEmoji = (e) => {
     // console.log(e.emoji);
     setText((prev => prev + e.emoji));
@@ -32,59 +49,20 @@ const Chat = () => {
         </div>
       </div>
       <div className='center'>
-        <div className="message">
+        {chat?.messages?.map((message)=>(
+          <div className="message own" key={message.createdAt}>
           <img src="./avatar.png" alt="img" />
           <div className="texts">
+            {message.img && 
+              <img src={message.img} alt="img" />
+            }
             <p>
-              Lorem ipsum, dolor sit amet consectetur adipisicing 
-              elit. Aut exercitationem dicta sint eum ullam 
-              iure est voluptate debitis. Dolorum impedit harum 
-              sed dicta repellendus debitis facilis tempora beatae 
-              eum nihil!
+              {message.text}
             </p>
-            <span>1 min ago</span>
+            {/* <span>1 min ago</span> */}
           </div>
         </div>
-        <div className="message own">
-          <img src="./avatar.png" alt="img" />
-          <div className="texts">
-            <img src="./avatar.png" alt="img" />
-            <p>
-              Lorem ipsum, dolor sit amet consectetur adipisicing 
-              elit. Aut exercitationem dicta sint eum ullam 
-              iure est voluptate debitis. Dolorum impedit harum 
-              sed dicta repellendus debitis facilis tempora beatae 
-              eum nihil!
-            </p>
-            <span>1 min ago</span>
-          </div>
-        </div>
-        <div className="message">
-          <img src="./avatar.png" alt="img" />
-          <div className="texts">
-            <p>
-              Lorem ipsum, dolor sit amet consectetur adipisicing 
-              elit. Aut exercitationem dicta sint eum ullam 
-              iure est voluptate debitis. Dolorum impedit harum 
-              sed dicta repellendus debitis facilis tempora beatae 
-              eum nihil!
-            </p>
-            <span>1 min ago</span>
-          </div>
-        </div>
-        <div className="message own">
-          <img src="./avatar.png" alt="img" />
-          <div className="texts">
-            <p>
-              Lorem ipsum, dolor sit amet consectetur adipisicing 
-              elit. Aut exercitationem dicta sint eum ullam 
-              iure est voluptate debitis. Dolorum impedit harum 
-              sed dicta repellendus debitis facilis tempora beatae 
-              eum nihil!
-            </p>
-            <span>1 min ago</span>
-          </div>
-        </div>
+        ))}
         <div ref={endRef}></div>
       </div>
       <div className='bottom'>
