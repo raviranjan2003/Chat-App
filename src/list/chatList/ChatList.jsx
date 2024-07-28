@@ -9,6 +9,7 @@ import useChatStore from '../../lib/chatStore';
 const ChatList = () => {
   const [addMode, setAddMode] = useState(false);
   const [chats, setChats] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
 
   const { currentUser } = useUserStore();
   const { changeChat } = useChatStore();
@@ -68,6 +69,8 @@ const ChatList = () => {
       console.log(error)
     }
   }
+
+  const filteredChats = chats.filter(c => c.user.username.toLowerCase().includes(searchInput.toLowerCase()));
   return (
     <div className='chatList'>
       <div className='search'>
@@ -75,6 +78,7 @@ const ChatList = () => {
           <img src='/search.png' alt='img'/>
           <input type="text" 
             placeholder='Search' 
+            onChange={e => setSearchInput(e.target.value)}
           />
         </div>
         <img 
