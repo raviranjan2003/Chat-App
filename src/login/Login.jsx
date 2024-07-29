@@ -53,7 +53,10 @@ const Login = () => {
             // creating user
             const response = await createUserWithEmailAndPassword(auth, email, password);
 
-            const imgUrl = await upload(avatar.file);
+            let imgUrl = "";
+            if(avatar.file){
+                imgUrl = await upload(avatar.file);
+            }
             
             // setting user's data to database
             await setDoc(doc(db, "users", response.user.uid), {
@@ -66,7 +69,7 @@ const Login = () => {
 
             // setting user's chat related data
             await setDoc(doc(db, "userchats", response.user.uid), {
-                chat: []
+                chats: []
             });
 
             toast.success("Account created!");
