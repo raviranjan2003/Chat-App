@@ -71,7 +71,10 @@ const ChatList = () => {
     }
   }
 
-  const filteredChats = chats.filter(c => c.user.username.toLowerCase().includes(searchInput.toLowerCase()));
+  // While filetering, we check for the user exists or not
+  // coz sometime, user is added as friend but his data is deleted from
+  // the database
+  const filteredChats = chats.filter(c => c.user?.username.toLowerCase().includes(searchInput.toLowerCase()));
   return (
     <div className='chatList'>
       <div className='search'>
@@ -105,7 +108,7 @@ const ChatList = () => {
           alt="" 
         />
         <div className='texts'>
-          <span>{chat.user.username}</span>
+          <span>{chat?.user?.username}</span>
           <p>{chat.lastMessage}</p>
         </div>
       </div>
