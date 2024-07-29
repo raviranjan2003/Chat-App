@@ -19,6 +19,7 @@ const ChatList = () => {
       // setChats(doc.data());
       try {
         const items = res.data().chats;
+        if(!items) return;
         const promises = items.map(async (item) => {
           const userDocRef = doc(db, "users", item.receiverId); // Fixed typo
           const userDocSnap = await getDoc(userDocRef);
